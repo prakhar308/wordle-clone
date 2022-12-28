@@ -17,29 +17,19 @@ let secret = wordList[randomIndex];
 let attempts = [];
 let currentAttempt = '';
 
-let grid = document.getElementById('grid');
-let keyboard = document.getElementById('keyboard');
-buildGrid();
-buildKeyboard();
-window.addEventListener('keydown', handleKeyDown);
-
-function handleKeyDown(event) {
-  let letter = event.key.toLowerCase();
-
+function handleKey(key) {
   // if alphabet then add it to current attempt
-  if (/^[a-z]$/.test(letter)) {
+  if (/^[a-z]$/.test(key)) {
     if (currentAttempt.length < 5) {
-      currentAttempt += letter;
+      currentAttempt += key;
     }
   }
-
   // if backspace then remove one alphabet from currentAttempt
-  if (letter == "backspace") {
+  else if (key == "backspace") {
     currentAttempt = currentAttempt.slice(0, -1);
   }
-
   // if enter then check if player won and save it to attempts
-  if (letter == "enter") {
+  else if (key == "enter") {
     if (currentAttempt.length == 5) {
       if (!wordList.includes(currentAttempt)) {
         alert('Not in word list!');
@@ -51,30 +41,18 @@ function handleKeyDown(event) {
       alert('Not enough letters');
     }
   }
+  
   updateGrid();
+}
+
+function handleKeyDown(event) {
+  let key = event.key.toLowerCase();
+  handleKey(key);
   updateKeyboard();
 }
 
-function handleButtonClick(text) {
-  if (text == "enter") {
-    if (currentAttempt.length == 5) {
-      if (!wordList.includes(currentAttempt)) {
-        alert('Not in word list!');
-        return;
-      }
-      attempts.push(currentAttempt);
-      currentAttempt = '';
-    } else {
-      alert('Not enough letters');
-    }
-  } else if (text == "cancel") {
-    currentAttempt = currentAttempt.slice(0, -1);
-  } else {
-    if (currentAttempt.length < 5) {
-      currentAttempt += text;
-    }
-  }
-  updateGrid();
+function handleButtonClick(key) {
+  handleKey(key);
   updateKeyboard();
 }
 
@@ -136,7 +114,7 @@ function buildKeyboardRow(letters, isLastRow) {
   }
 
   if (isLastRow) {
-    row.appendChild(buildKeyboardButton('cancel'));
+    row.appendChild(buildKeyboardButton('backspace'));
   }
 
   keyboard.appendChild(row);
@@ -152,12 +130,22 @@ function updateKeyboard() {
   }
 }
 
+let GREY = '#3a3a3c';
+let GREEN = '#538d4e';
+let YELLOW = '#b59f3b'; 
+
 function getBgColor(attempt, i) {
   if (attempt[i] == secret[i]) {
-    return '#538d4e';
+    return GREEN;
   } else if (secret.includes(attempt[i])) {
-    return '#b59f3b';
+    return YELLOW;
   } else {
-    return '#3a3a3c';
+    return GREY;
   }
 }
+
+let grid = document.getElementById('grid');
+let keyboard = document.getElementById('keyboard');
+buildGrid();
+buildKeyboard();
+window.addEventListener('keydown', handleKeyDown);
