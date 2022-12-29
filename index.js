@@ -11,8 +11,7 @@ let wordList = [
   'dance'
 ];
 
-let randomIndex = Math.floor((Math.random() * wordList.length));
-let secret = wordList[randomIndex];
+let secret = wordList[1];
 
 let attempts = [];
 let currentAttempt = '';
@@ -47,6 +46,7 @@ function handleKey(key) {
     attempts.push(currentAttempt);
     currentAttempt = '';
     updateKeyboard();
+    saveGame();
 
     if (attempts.length == 6) {
       alert(`You Lost. Word was: ${secret}`);
@@ -168,9 +168,32 @@ function getBgColor(attempt, i) {
   }
 }
 
+function loadGame() {
+  let data;
+  try {
+    data = JSON.parse(localStorage.getItem('data'));
+  } catch { }
+  if (data != null) {
+    if (data.secret == secret) {
+      attempts = data.attempts
+    }
+  }
+}
+
+function saveGame() {
+  let data = JSON.stringify({
+    secret,
+    attempts
+  });
+  localStorage.setItem('data', data);
+}
+
 let grid = document.getElementById('grid');
 let keyboard = document.getElementById('keyboard');
 let keyboardButtons = new Map();
+loadGame();
 buildGrid();
+updateGrid();
 buildKeyboard();
+updateKeyboard();
 window.addEventListener('keydown', handleKeyDown);
