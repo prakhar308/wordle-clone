@@ -18,13 +18,27 @@
         height: 30px;
         line-height: 30px;
         font-size: 30px;
-        border: 1px solid gray;
+        border: 2px solid #3a3a3c;
         display: inline-block;
-        padding: 15px;
-        margin-right: 3px;
+        padding: 10px;
+        margin: 2px;
         color: white;
         font-weight: bold;
         vertical-align: top;
+      }
+      @keyframes press {
+        from {
+          opacity: 0.5;
+          transform: scale(0.9);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
       }
 
       #keyboard {

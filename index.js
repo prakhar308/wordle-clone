@@ -21,6 +21,7 @@ function handleKey(key) {
   if (/^[a-z]$/.test(key)) {
     if (currentAttempt.length < 5) {
       currentAttempt += key;
+      animatePress(currentAttempt.length - 1);
     }
   }
   // if backspace then remove one alphabet from currentAttempt
@@ -89,8 +90,16 @@ function drawAttempt(row, attempt, isCurrent) {
   for (let i = 0; i < 5; i++) {
     let cell = row.children[i];
     cell.textContent = attempt[i] ?? '';
-    if (!isCurrent) {
+    // clearAnimation(cell);
+    if (isCurrent) {
+      if (cell.textContent) {
+        cell.style.borderColor = LIGHTGREY;
+      } else {
+        cell.style.borderColor = GREY;
+      }
+    } else {
       cell.style.background = getBgColor(attempt, i);
+      cell.style.borderColor = BLACK;
     }
   }
 }
@@ -154,9 +163,11 @@ function updateKeyboard() {
   }
 }
 
+let LIGHTGREY = '#565758';
 let GREY = '#3a3a3c';
 let GREEN = '#538d4e';
-let YELLOW = '#b59f3b'; 
+let YELLOW = '#b59f3b';
+let BLACK = '#000000'; 
 
 function getBgColor(attempt, i) {
   if (attempt[i] == secret[i]) {
@@ -166,6 +177,19 @@ function getBgColor(attempt, i) {
   } else {
     return GREY;
   }
+}
+
+function animatePress(index) {
+  let rowIndex = attempts.length;
+  let row = grid.children[rowIndex];
+  let cell = row.children[index];
+  cell.style.animationName = 'press';
+  cell.style.animationDuration = '200ms';
+}
+
+function clearAnimation(cell) {
+  cell.style.animationName = '';
+  cell.style.animationDuration = ''; 
 }
 
 function loadGame() {
