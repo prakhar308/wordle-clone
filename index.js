@@ -43,17 +43,16 @@ function handleKey(key) {
   }
   
   updateGrid();
+  updateKeyboard(); 
 }
 
 function handleKeyDown(event) {
   let key = event.key.toLowerCase();
   handleKey(key);
-  updateKeyboard();
 }
 
 function handleButtonClick(key) {
   handleKey(key);
-  updateKeyboard();
 }
 
 function buildGrid() {
@@ -102,6 +101,7 @@ function buildKeyboardRow(letters, isLastRow) {
     button.textContent = text;
     button.className = 'keyboard-button';
     button.onclick = () => handleButtonClick(text);
+    keyboardButtons.set(text, button);
     return button;
   }
 
@@ -120,13 +120,28 @@ function buildKeyboardRow(letters, isLastRow) {
   keyboard.appendChild(row);
 }
 
+function getBetterColor(a, b) {
+  if (a === GREEN || b === GREEN) {
+    return GREEN;
+  }
+  if (a === YELLOW || b === YELLOW) {
+    return YELLOW;
+  }
+  return GREY;
+}
+
 function updateKeyboard() {
+  let bestColors = new Map();
   for (let attempt of attempts) {
     for (let i = 0; i < attempt.length; i++) {
-      let button = document.getElementById(attempt[i]);
-      // TODO: apply color based on precedence like once green then should not be changed, green > yellow
-      button.style.background = getBgColor(attempt, i);
+      var newColor = getBgColor(attempt, i);
+      var currentColor = bestColors.get(attempt[i]);
+      bestColors.set(attempt[i], getBetterColor(currentColor, newColor));
     }
+  }
+
+  for (let [key, button] of keyboardButtons) {
+    button.style.background = bestColors.get(key); 
   }
 }
 
@@ -146,6 +161,7 @@ function getBgColor(attempt, i) {
 
 let grid = document.getElementById('grid');
 let keyboard = document.getElementById('keyboard');
+let keyboardButtons = new Map();
 buildGrid();
 buildKeyboard();
 window.addEventListener('keydown', handleKeyDown);
