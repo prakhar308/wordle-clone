@@ -30,20 +30,29 @@ function handleKey(key) {
   }
   // if enter then check if player won and save it to attempts
   else if (key == "enter") {
-    if (currentAttempt.length == 5) {
-      if (!wordList.includes(currentAttempt)) {
-        alert('Not in word list!');
-        return;
-      }
-      attempts.push(currentAttempt);
-      currentAttempt = '';
-    } else {
+    if (currentAttempt.length != 5) {
       alert('Not enough letters');
+      return;
+    }
+
+    if (!wordList.includes(currentAttempt)) {
+      alert('Not in word list!');
+      return;
+    }
+
+    if (currentAttempt == secret) {
+      alert("Yayy you won!!");
+    }
+
+    attempts.push(currentAttempt);
+    currentAttempt = '';
+    updateKeyboard();
+
+    if (attempts.length == 6) {
+      alert(`You Lost. Word was: ${secret}`);
     }
   }
-  
   updateGrid();
-  updateKeyboard(); 
 }
 
 function handleKeyDown(event) {
