@@ -71,6 +71,12 @@ function buildGrid() {
     for (let j = 0; j < 5; j++) {
       let cell = document.createElement('div');
       cell.className = 'cell';
+      let front = document.createElement('div');
+      front.className = 'front'
+      let back = document.createElement('div');
+      back.className = 'back'
+      cell.appendChild(front);
+      cell.appendChild(back);
       row.appendChild(cell);
     }
     grid.appendChild(row);
@@ -78,30 +84,45 @@ function buildGrid() {
 }
 
 function updateGrid() {
-  let row = grid.firstChild;
-  for (let attempt of attempts) {
-    drawAttempt(row, attempt, false);
-    row = row.nextSibling;
+  for (let i = 0; i < 6; i++) {
+    let row = grid.children[i];
+    if (i < attempts.length) {
+      drawAttempt(row, attempts[i], true);
+    } else if (i === attempts.length) {
+      drawAttempt(row, currentAttempt, false);
+    } else {
+      drawAttempt(row, '', false);
+    }
   }
-  drawAttempt(row, currentAttempt, true);
 }
 
-function drawAttempt(row, attempt, isCurrent) {
+function drawAttempt(row, attempt, solved) {
   for (let i = 0; i < 5; i++) {
     let cell = row.children[i];
-    cell.textContent = attempt[i] ?? '';
-    if (attempt[i] === undefined) {
+    let front = cell.children[0];
+    let back = cell.children[1];
+    front.textContent = attempt[i] ?? '';
+    back.textContent = attempt[i] ?? '';
+    
+    if (attempt[i] == undefined) {
       clearAnimation(cell);
     }
-    if (isCurrent) {
-      if (cell.textContent) {
-        cell.style.borderColor = LIGHTGREY;
-      } else {
-        cell.style.borderColor = GREY;
-      }
+
+    if (solved) {
+      back.style.background = getBgColor(attempt, i);
+      back.style.borderColor = BLACK;
     } else {
-      cell.style.background = getBgColor(attempt, i);
-      cell.style.borderColor = BLACK;
+      if (front.textContent) {
+        front.style.borderColor = LIGHTGREY;
+      } else {
+        front.style.borderColor = GREY;
+      }
+    }
+
+    if (solved) {
+      cell.classList.add('solved');
+    } else {
+      cell.classList.remove('solved');
     }
   }
 }
@@ -161,7 +182,7 @@ function updateKeyboard() {
   }
 
   for (let [key, button] of keyboardButtons) {
-    button.style.background = bestColors.get(key); 
+    button.style.background = bestColors.get(key);
   }
 }
 
@@ -169,7 +190,7 @@ let LIGHTGREY = '#565758';
 let GREY = '#3a3a3c';
 let GREEN = '#538d4e';
 let YELLOW = '#b59f3b';
-let BLACK = '#000000'; 
+let BLACK = '#000000';
 
 function getBgColor(attempt, i) {
   if (attempt[i] == secret[i]) {
@@ -191,7 +212,7 @@ function animatePress(index) {
 
 function clearAnimation(cell) {
   cell.style.animationName = '';
-  cell.style.animationDuration = ''; 
+  cell.style.animationDuration = '';
 }
 
 function loadGame() {
