@@ -71,12 +71,15 @@ function buildGrid() {
     for (let j = 0; j < 5; j++) {
       let cell = document.createElement('div');
       cell.className = 'cell';
+      let surface = document.createElement('div');
+      surface.className = 'surface';
       let front = document.createElement('div');
       front.className = 'front'
       let back = document.createElement('div');
       back.className = 'back'
-      cell.appendChild(front);
-      cell.appendChild(back);
+      surface.appendChild(front);
+      surface.appendChild(back);
+      cell.appendChild(surface);
       row.appendChild(cell);
     }
     grid.appendChild(row);
@@ -99,8 +102,9 @@ function updateGrid() {
 function drawAttempt(row, attempt, solved) {
   for (let i = 0; i < 5; i++) {
     let cell = row.children[i];
-    let front = cell.children[0];
-    let back = cell.children[1];
+    let surface = cell.firstChild;
+    let front = surface.children[0];
+    let back = surface.children[1];
     front.textContent = attempt[i] ?? '';
     back.textContent = attempt[i] ?? '';
     
