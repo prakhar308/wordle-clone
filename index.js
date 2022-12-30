@@ -90,7 +90,9 @@ function drawAttempt(row, attempt, isCurrent) {
   for (let i = 0; i < 5; i++) {
     let cell = row.children[i];
     cell.textContent = attempt[i] ?? '';
-    // clearAnimation(cell);
+    if (attempt[i] === undefined) {
+      clearAnimation(cell);
+    }
     if (isCurrent) {
       if (cell.textContent) {
         cell.style.borderColor = LIGHTGREY;
@@ -184,7 +186,7 @@ function animatePress(index) {
   let row = grid.children[rowIndex];
   let cell = row.children[index];
   cell.style.animationName = 'press';
-  cell.style.animationDuration = '200ms';
+  cell.style.animationDuration = '100ms';
 }
 
 function clearAnimation(cell) {
