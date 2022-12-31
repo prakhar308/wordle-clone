@@ -73,6 +73,7 @@ function buildGrid() {
       cell.className = 'cell';
       let surface = document.createElement('div');
       surface.className = 'surface';
+      surface.style.transitionDelay = (j * 200) + 'ms';
       let front = document.createElement('div');
       front.className = 'front'
       let back = document.createElement('div');
