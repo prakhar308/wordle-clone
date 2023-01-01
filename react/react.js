@@ -1,4 +1,5 @@
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import Wordle from './Wordle.js';
 
-render(<Wordle />, document.getElementById('root'))
+let root = createRoot(document.getElementById('root')); 
+root.render(<Wordle />);
