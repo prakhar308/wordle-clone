@@ -1,9 +1,73 @@
+import { useState, useEffect } from 'react'
+
 export default function Wordle() {
+  let [attempts, setAttempts] = useState([]);
+  let [currentAttempt, setCurrentAttempt] = useState('');
+
+  function handleKey(key) {
+    // if alphabet then add it to current attempt
+    if (/^[a-z]$/.test(key)) {
+      if (currentAttempt.length < 5) {
+        setCurrentAttempt(currentAttempt + key);
+        // TODO: animatePress(currentAttempt.length - 1);
+      }
+    }
+    // if backspace then remove one alphabet from currentAttempt
+    else if (key == "backspace") {
+      setCurrentAttempt(currentAttempt.slice(0, -1));
+    }
+    // if enter then check if player won and save it to attempts
+    else if (key == "enter") {
+      if (currentAttempt.length != 5) {
+        alert('Not enough letters');
+        return;
+      }
+
+      if (!wordList.includes(currentAttempt)) {
+        alert('Not in word list!');
+        return;
+      }
+
+      if (currentAttempt == secret) {
+        alert("Yayy you won!!");
+      }
+
+      setAttempts([
+        ...attempts,
+        currentAttempt
+      ]);
+      setCurrentAttempt('');
+      //TODO: saveGame();
+
+      if (attempts.length == 6) {
+        alert(`You Lost. Word was: ${secret}`);
+      }
+    }
+  }
+
+  function handleKeyDown(e) {
+    if (event.ctrlKey || e.metaKey || e.altKey) {
+      return;
+    }
+    let key = e.key.toLowerCase();
+    handleKey(key);
+  }
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  });
+
   return (
     <div id="screen">
       <h1>Wordle</h1>
-      <Grid />
-      <Keyboard />
+      <Grid
+        attempts={attempts}
+        currentAttempt={currentAttempt}
+      />
+      <Keyboard
+        onKeyDown={handleKey}
+      />
     </div>
   );
 }
@@ -20,10 +84,11 @@ let wordList = [
 ];
 
 let secret = wordList[1];
-let attempts = ['sport', 'piano', 'panic'];
-let currentAttempt = 'wat';
 
-function Grid() {
+function Grid({
+  attempts,
+  currentAttempt
+}) {
   let rows = []
   for (let i = 0; i < 6; i++) {
     if (i < attempts.length) {
@@ -113,19 +178,22 @@ function Cell({
   );
 }
 
-function Keyboard() {
+function Keyboard({
+  onKeyDown
+}) {
   return (
     <div id="keyboard">
-      <KeyboardRow letters="qwertyuiop" isLastRow={false} />
-      <KeyboardRow letters="asdfghjkl" isLastRow={false} />
-      <KeyboardRow letters="zxcvbnm" isLastRow={true} />
+      <KeyboardRow letters="qwertyuiop" onKeyDown={onKeyDown} isLastRow={false} />
+      <KeyboardRow letters="asdfghjkl" onKeyDown={onKeyDown} isLastRow={false} />
+      <KeyboardRow letters="zxcvbnm" onKeyDown={onKeyDown} isLastRow={true} />
     </div>
   );
 }
 
 function KeyboardRow({
   letters,
-  isLastRow
+  onKeyDown,
+  isLastRow,
 }) {
   let buttons = []
   if (isLastRow) {
@@ -133,6 +201,7 @@ function KeyboardRow({
       <Button
         key="enter"
         buttonKey="enter"
+        onKeyDown={onKeyDown}
       >
         Enter
       </Button>
@@ -144,6 +213,7 @@ function KeyboardRow({
       <Button
         key={letter}
         buttonKey={letter}
+        onKeyDown={onKeyDown}
       >
         {letter}
       </Button>
@@ -155,12 +225,13 @@ function KeyboardRow({
       <Button
         key="backspace"
         buttonKey="backspace"
+        onKeyDown={onKeyDown}
       >
         Backspace
       </Button>
     );
   }
-  return(
+  return (
     <div>
       {buttons}
     </div>
@@ -169,14 +240,14 @@ function KeyboardRow({
 
 function Button({
   buttonKey,
-  children
+  children,
+  onKeyDown
 }) {
   return (
     <button
       className="keyboard-button"
       onClick={() => {
-        // TODO
-        // handleButtonClick()
+        onKeyDown(buttonKey)
       }}
     >
       {children}
