@@ -1,8 +1,24 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export default function Wordle() {
   let [attempts, setAttempts] = useState([]);
   let [currentAttempt, setCurrentAttempt] = useState('');
+  let loadedRef = useRef(false);
+
+  useEffect(() => {
+    if (loadedRef.current) {
+      return
+    }
+    loadedRef.current = true
+    let savedAttempts = loadAttempts();
+    if (savedAttempts) {
+      setAttempts(savedAttempts);
+    }
+  });
+
+  useEffect(() => {
+    saveAttempts(attempts);
+  }, [attempts])
 
   function handleKey(key) {
     // if alphabet then add it to current attempt
@@ -37,7 +53,6 @@ export default function Wordle() {
         currentAttempt
       ]);
       setCurrentAttempt('');
-      //TODO: saveGame();
 
       if (attempts.length == 6) {
         alert(`You Lost. Word was: ${secret}`);
@@ -253,6 +268,26 @@ function Button({
       {children}
     </button>
   );
+}
+
+function loadAttempts() {
+  let data;
+  try {
+    data = JSON.parse(localStorage.getItem('data'));
+  } catch { }
+  if (data != null) {
+    if (data.secret == secret) {
+      return data.attempts
+    }
+  }
+}
+
+function saveAttempts(attempts) {
+  let data = JSON.stringify({
+    secret,
+    attempts
+  });
+  localStorage.setItem('data', data);
 }
 
 function getBgColor(attempt, i) {
